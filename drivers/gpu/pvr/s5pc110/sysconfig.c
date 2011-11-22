@@ -787,16 +787,3 @@ PVRSRV_ERROR SysOEMFunction(IMG_UINT32	ui32ID,
 
 	return PVRSRV_ERROR_INVALID_PARAMS;
 }
-
-
-PVRSRV_ERROR SysPowerLockWrap(SYS_DATA unref__ *psSysData)
-{                                                               
-	return PVRSRV_OK;                                       
-}                                                               
-                                                                
-IMG_VOID SysPowerLockUnwrap(SYS_DATA unref__ *psSysData)
-{                                                               
-}                                                               
-
-
-
