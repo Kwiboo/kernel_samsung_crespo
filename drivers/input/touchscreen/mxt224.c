@@ -305,15 +305,19 @@ static void report_input_data(struct mxt224_data *data)
 		if (data->fingers[i].z == -1)
 			continue;
 
+        input_report_abs(data->input_dev, ABS_MT_SLOT, i);
+        input_report_abs(data->input_dev, ABS_MT_TRACKING_ID, i);
 		input_report_abs(data->input_dev, ABS_MT_POSITION_X,
 					data->fingers[i].x);
 		input_report_abs(data->input_dev, ABS_MT_POSITION_Y,
 					data->fingers[i].y);
-		input_report_abs(data->input_dev, ABS_MT_TOUCH_MAJOR,
-					data->fingers[i].z);
-		input_report_abs(data->input_dev, ABS_MT_WIDTH_MAJOR,
-					data->fingers[i].w);
-		input_report_abs(data->input_dev, ABS_MT_TRACKING_ID, i);
+        // input_report_abs(data->input_dev, ABS_MT_TOUCH_MAJOR,
+        //          data->fingers[i].z);
+        // input_report_abs(data->input_dev, ABS_MT_WIDTH_MAJOR,
+        //          data->fingers[i].w);
+        input_report_abs(data->input_dev, ABS_MT_PRESSURE, data->fingers[i].z);
+        
+		//input_report_abs(data->input_dev, ABS_MT_TRACKING_ID, i);
 		input_mt_sync(data->input_dev);
 
 		if (data->fingers[i].z == 0)
@@ -490,16 +494,22 @@ static int __devinit mxt224_probe(struct i2c_client *client,
 	input_set_drvdata(input_dev, data);
 	input_dev->name = "mxt224_ts_input";
 
+    __set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
 	set_bit(EV_ABS, input_dev->evbit);
+    set_bit(ABS_MT_PRESSURE, input_dev->absbit);
+    set_bit(ABS_MT_SLOT, input_dev->absbit);
+    set_bit(ABS_MT_TRACKING_ID, input_dev->absbit);
 
 	input_set_abs_params(input_dev, ABS_MT_POSITION_X, pdata->min_x,
 			pdata->max_x, 0, 0);
 	input_set_abs_params(input_dev, ABS_MT_POSITION_Y, pdata->min_y,
 			pdata->max_y, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_TOUCH_MAJOR, pdata->min_z,
-			pdata->max_z, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_WIDTH_MAJOR, pdata->min_w,
-			pdata->max_w, 0, 0);
+    // input_set_abs_params(input_dev, ABS_MT_TOUCH_MAJOR, pdata->min_z,
+    //      pdata->max_z, 0, 0);
+    // input_set_abs_params(input_dev, ABS_MT_WIDTH_MAJOR, pdata->min_w,
+    //      pdata->max_w, 0, 0);
+    input_set_abs_params(input_dev, ABS_MT_PRESSURE, 0, 255, 0, 0);
+    input_set_abs_params(input_dev, ABS_MT_SLOT, 0, data->num_fingers - 1, 0, 0);
 	input_set_abs_params(input_dev, ABS_MT_TRACKING_ID, 0,
 			data->num_fingers - 1, 0, 0);
 
